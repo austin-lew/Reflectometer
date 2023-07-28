@@ -29,7 +29,7 @@ def sobel(img):
     return img_sobel_x, img_sobel_y
 
 def nms(img_sobel_x, img_sobel_y):
-    angles = np.arctan(img_sobel_x, img_sobel_y)
+    angles = np.arctan(img_sobel_y/img_sobel_x)
     norms = getNorm(img_sobel_x, img_sobel_y)
 
     for y, x in np.ndindex(norms.shape):
@@ -71,10 +71,10 @@ def nms(img_sobel_x, img_sobel_y):
             tail = interpolate(p2, p3, alpha)
 
             # Perform non-max suppression
-            if (norms[y][x] > head and norms[y][x] > tail):
+            if (norms[y][x] >= head and norms[y][x] >= tail):
                 pass
             else:
-                norms[y][x]==0 # If pixel is not the max along its gradient, suppress it 
+                norms[y][x]=0 # If pixel is not the max along its gradient, suppress it 
 
     return norms
 
@@ -92,4 +92,4 @@ def thresh(img, thresh_high, thresh_low):
     return img_thresh
 
 def interpolate(p0, p1, alpha):
-    return (1-alpha)*p0 + alpha*p1
+    return ((1-alpha)*p0 + alpha*p1)

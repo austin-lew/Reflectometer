@@ -1,16 +1,40 @@
 import canny
 import numpy as np
 import cv2
+import os
+import matplotlib.pyplot as plt
+
 
 def main():
-    # Read image, detect edges, and show
-    img = cv2.imread("test.jpg")
-    img_blur = cv2.GaussianBlur(img, (3,3), 3)
-    img_gray = cv2.cvtColor(img_blur, cv2.COLOR_BGR2GRAY)
+    reflective_arr = []
+    for filename in os.listdir("./reflective"):
+        # Read image, detect edges, and show
+        img = cv2.imread("./reflective/"+filename, cv2.IMREAD_GRAYSCALE)
+        binary_mask = cv2.imread("./binaryMask.jpg", cv2.IMREAD_GRAYSCALE)
+        img_blur = cv2.GaussianBlur(img, (3,3), 3)
+        img_canny = canny.canny(img_blur,20,20)
+        img_masked = cv2.bitwise_and(img_canny, binary_mask)
 
-    img_canny = canny.canny(img_gray,20,10)
-    cv2.imshow("test.jpg", img_canny)
-    cv2.waitKey(0)
+        reflective_arr.append(np.sum(img_masked&1))
+        print(np.sum(img_masked&1))
+
+    matte_arr = []
+    for filename in os.listdir("./matte"):
+        # Read image, detect edges, and show
+        img = cv2.imread("./matte/"+filename, cv2.IMREAD_GRAYSCALE)
+        binary_mask = cv2.imread("./binaryMask.jpg", cv2.IMREAD_GRAYSCALE)
+        img_blur = cv2.GaussianBlur(img, (3,3), 3)
+        img_canny = canny.canny(img_blur,20,20)
+        img_masked = cv2.bitwise_and(img_canny, binary_mask)
+
+        matte_arr.append(np.sum(img_masked&1))
+        print(np.sum(img_masked&1))
+
+
+    print(reflective_arr)
+    print(matte_arr)
+
+
     
 if (__name__=="__main__"):
     main()
